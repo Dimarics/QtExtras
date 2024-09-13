@@ -10,7 +10,7 @@ namespace Ui { class Window; }
 class Window : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QColor panelButtonColor READ getPanelButtonColor WRITE setPanelButtonColor)
+    Q_PROPERTY(QColor panelButtonColor WRITE setPanelButtonColor)
 public:
     enum WindowFlag
     {
@@ -37,7 +37,7 @@ public:
     QString title() const;
     QPixmap icon() const;
     QPen panelPen() const;
-    QColor getPanelButtonColor() const;
+    //QColor getPanelButtonColor() const;
 
 private:
     Ui::Window *ui;

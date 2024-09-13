@@ -1,0 +1,2 @@
+#include "contourimage.h"
+#include "contourimage.cpp"

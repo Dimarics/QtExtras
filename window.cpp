@@ -150,10 +150,10 @@ QPen Window::panelPen() const
     return m_panelPen;
 }
 
-QColor Window::getPanelButtonColor() const
+/*QColor Window::getPanelButtonColor() const
 {
     return m_panelPen.color();
-}
+}*/
 
 bool Window::eventFilter(QObject* target, QEvent* event)
 {
