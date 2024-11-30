@@ -1,5 +1,6 @@
 #include "graphicsrelocitem.h"
 #include "iconengine.h"
+#include <QtMath>
 
 #include <QPainter>
 #include <QCursor>

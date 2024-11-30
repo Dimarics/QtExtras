@@ -14,13 +14,13 @@ class Window : public QWidget
 public:
     enum WindowFlag
     {
-        Default        = 0,
-        MainWindow     = 1,
-        DeleteOnClose  = 2,
-        Modal          = 4,
-        NoHidden       = 8,
-        NoScreenMode   = 16,
-        FixedSize      = 32
+        Default       = 0,
+        MainWindow    = 1,
+        DeleteOnClose = 2,
+        Modal         = 4,
+        NoHidden      = 8,
+        NoScreenMode  = 16,
+        FixedSize     = 32
     };
     Q_DECLARE_FLAGS(WindowFlags, WindowFlag);
     Window(QWidget*, const QString& = QString(), WindowFlags = Default);

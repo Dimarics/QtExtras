@@ -104,7 +104,7 @@ color: white</string>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -263,7 +263,7 @@ QPushButton:pressed {
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QWidget" name="line" native="true">
+    <widget class="QWidget" name="panelSeparator" native="true">
      <property name="minimumSize">
       <size>
        <width>0</width>

@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QPainter>
 #include <QFile>
+#include <QStyle>
 
 Window::Window(QWidget *widget, const QString &title, WindowFlags flags) :
     QWidget(nullptr, Qt::Window | Qt::FramelessWindowHint),
@@ -52,18 +53,11 @@ Window::Window(QWidget *widget, const QString &title, WindowFlags flags) :
                 QRect rect = QApplication::primaryScreen()->availableGeometry();
                 setGeometry(rect.x() - 10, rect.y() - 10, rect.width() + 20, rect.height() + 20);
                 ui->screenModeButton->setToolTip(tr("Свернуть в окно"));
-
-                IconEngine windowMode(IconEngine::WindowMode, ui->screenModeButton->iconSize() * devicePixelRatio());
-                windowMode.setPen(m_panelPen);
-                ui->screenModeButton->setIcon(QIcon(windowMode.pixmap()));
             }
             else
             {
                 setGeometry(m_normalGeometry);
                 ui->screenModeButton->setToolTip(tr("Развернуть"));
-                IconEngine fullScreen(IconEngine::FullScreen, ui->screenModeButton->iconSize() * devicePixelRatio());
-                fullScreen.setPen(m_panelPen);
-                ui->screenModeButton->setIcon(QIcon(fullScreen.pixmap()));
             }
         });
     }
@@ -117,6 +111,15 @@ void Window::setPanelButtonColor(const QColor &color)
     IconEngine hide(IconEngine::Hide, ui->hideButton->iconSize() * devicePixelRatio());
     hide.setPen(m_panelPen);
     ui->hideButton->setIcon(QIcon(hide.pixmap()));
+
+    IconEngine windowMode(IconEngine::WindowMode, ui->screenModeButton->iconSize() * devicePixelRatio());
+    IconEngine fullScreen(IconEngine::FullScreen, ui->screenModeButton->iconSize() * devicePixelRatio());
+    windowMode.setPen(m_panelPen);
+    fullScreen.setPen(m_panelPen);
+    QIcon windowModeIcon;
+    windowModeIcon.addPixmap(windowMode.pixmap(), QIcon::Normal, QIcon::On);
+    windowModeIcon.addPixmap(fullScreen.pixmap(), QIcon::Normal, QIcon::Off);
+    ui->screenModeButton->setIcon(windowModeIcon);
 }
 
 void Window::showMaximum(const bool full)
