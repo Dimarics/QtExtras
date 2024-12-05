@@ -256,11 +256,13 @@ void View3D::setRootEntity(Qt3DCore::QEntity *entity)
 
 void View3D::jointMoveEvent(Joint *joint)
 {
-    if (joint->entity()->objectName() == "Палец левый")
+    /*if (joint->entity()->objectName() == "Палец левый")
     {
         collideEntities(joint->entity(), m_rootEntity);
-    }
+    }*/
 }
+
+void View3D::jointDropEvent(Joint*){}
 
 bool View3D::eventFilter(QObject *target, QEvent *event)
 {
@@ -340,7 +342,11 @@ bool View3D::eventFilter(QObject *target, QEvent *event)
             break;
 
         case QEvent::MouseButtonRelease:
-            m_activeJoint = nullptr;
+            if (m_activeJoint)
+            {
+                jointDropEvent(m_activeJoint);
+                m_activeJoint = nullptr;
+            }
             if (mouseEvent->button() == Qt::LeftButton)
                 m_camera.active = false;
             break;

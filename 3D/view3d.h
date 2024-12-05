@@ -45,7 +45,8 @@ public:
     Qt3DRender::QCamera *camera() const;
 
 protected:
-    void jointMoveEvent(Joint *joint);
+    virtual void jointMoveEvent(Joint *joint);
+    virtual void jointDropEvent(Joint *joint);
     bool eventFilter(QObject *target, QEvent *event);
 
 private:

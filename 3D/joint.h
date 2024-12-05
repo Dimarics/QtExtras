@@ -19,6 +19,7 @@ public:
     QVector3D originPoint() const;
     QVector3D rotationAxis() const;
     QVector3D offset() const;
+    QString name() const;
     Qt3DCore::QEntity *entity();
     Qt3DCore::QTransform *transform();
 

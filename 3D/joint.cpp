@@ -24,7 +24,6 @@ void Joint::setRotationAxis(const QVector3D &rotationAxis) { m_rotationAxis = ro
 void Joint::rotate(qreal angle)
 {
     m_angle += angle;
-    m_angle = m_angle - 360.f * (int(m_angle) / 360);
     QVector3D translation = pos();
     m_transform->setRotation(m_transform->rotation() * QQuaternion::fromAxisAndAngle(m_rotationAxis, angle));
     m_transform->setTranslation(translation + offset());
@@ -59,6 +58,8 @@ QVector3D Joint::offset() const
     QVector3D newOriginPoint = m_transform->matrix().mapVector(m_originPoint);
     return m_originPoint - newOriginPoint;
 }
+
+QString Joint::name() const { return m_entity ? m_entity->objectName() : QString(); }
 
 Qt3DCore::QEntity *Joint::entity() { return m_entity; }
 Qt3DCore::QTransform *Joint::transform() { return m_transform; }
