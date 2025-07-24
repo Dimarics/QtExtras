@@ -63,17 +63,6 @@ View3D::View3D(QWidget *parent) : QWindowContainer(new Qt3DExtras::Qt3DWindow, p
             if (hits.at(i).distance() < hit.distance()) hit = hits.at(i);
         m_pickPos = hit.worldIntersection();
         emit objectChanged(hit.entity());
-
-        std::function<Joint*(Qt3DCore::QEntity *)> findJoint =
-                [&findJoint](Qt3DCore::QEntity *entity)->Joint*
-        {
-            for (Qt3DCore::QComponent *component : entity->components())
-                if (Joint *joint = qobject_cast<Joint*>(component))
-                    return joint;
-            if (Qt3DCore::QEntity *parentEntity = entity->parentEntity())
-                return findJoint(parentEntity);
-            return nullptr;
-        };
         m_activeJoint = findJoint(hit.entity());
     });
 }
@@ -144,9 +133,27 @@ Qt3DRender::QCamera *View3D::camera() const
     return m_view->camera();
 }
 
+Joint *View3D::getJoint(const QString &name)
+{
+    if (Qt3DCore::QEntity *jointEntity = entity(name))
+        return findJoint(jointEntity);
+    return nullptr;
+}
+
+void View3D::setJointAngle(const QString &name, qreal angle)
+{
+    if (Qt3DCore::QEntity *jointEntity = entity(name))
+    {
+        if (Joint *joint = findJoint(jointEntity))
+        {
+            joint->setAngle(angle);
+        }
+    }
+}
+
 void View3D::rayCaster(Qt3DCore::QEntity *checkEntity)
 {
-    if (!checkEntity->isEnabled())
+    /*if (!checkEntity->isEnabled())
         return;
 
     GeometryData geometryData = getGeometryData(checkEntity);
@@ -165,7 +172,7 @@ void View3D::rayCaster(Qt3DCore::QEntity *checkEntity)
     }
     for (Qt3DCore::QNode *node : checkEntity->childNodes())
         if (Qt3DCore::QEntity *child = qobject_cast<Qt3DCore::QEntity*>(node))
-            rayCaster(child);
+            rayCaster(child);*/
 }
 
 /*void View3D::drawLine(const QVector3D& p1, const QVector3D& p2, const QColor& color, Qt3DCore::QEntity *root)
@@ -254,15 +261,26 @@ void View3D::setRootEntity(Qt3DCore::QEntity *entity)
     m_view->setRootEntity(m_rootEntity);
 }
 
-void View3D::jointMoveEvent(Joint *joint)
+void View3D::addJointInGroup(int id, Joint *joint, bool inverted)
 {
-    /*if (joint->entity()->objectName() == "Палец левый")
-    {
-        collideEntities(joint->entity(), m_rootEntity);
-    }*/
+    if (id >= m_jointGroups.size()) m_jointGroups.resize(id + 1);
+    m_jointGroups[id][joint] = inverted;
 }
 
-void View3D::jointDropEvent(Joint*){}
+bool View3D::jointIsActive() const { return m_activeJoint; }
+
+Joint *View3D::findJoint(Qt3DCore::QEntity *entity)
+{
+    for (Qt3DCore::QComponent *component : entity->components())
+        if (Joint *joint = qobject_cast<Joint*>(component))
+            return joint;
+    if (Qt3DCore::QEntity *parentEntity = entity->parentEntity())
+        return findJoint(parentEntity);
+    return nullptr;
+}
+
+void View3D::jointMoveEvent(Joint*, qreal) {}
+void View3D::jointDropEvent(Joint*) {}
 
 bool View3D::eventFilter(QObject *target, QEvent *event)
 {
@@ -314,6 +332,7 @@ bool View3D::eventFilter(QObject *target, QEvent *event)
                 QVector3D worldOriginPoint = worldMatrix.map(m_activeJoint->originPoint());
                 QVector3D p0(pointIntersectionWithPlane(worldRotationAxis, worldRotationAxis,
                                                         worldOriginPoint, m_pickPos));
+                qDebug() << p0;
 
                 QVector3D v1(mapToWorld(m_mousePos, worldRotationAxis, m_pickPos) - p0);
                 QVector3D v2(mapToWorld(mouseEvent->position(), worldRotationAxis, m_pickPos) - p0);
@@ -328,9 +347,17 @@ bool View3D::eventFilter(QObject *target, QEvent *event)
                         QVector3D::dotProduct(p0 - m_view->camera()->position(), worldRotationAxis) /
                         QVector3D::dotProduct(dirInPoint(m_mousePos.x(), m_mousePos.y()),
                                               worldRotationAxis);*/
-
-                m_activeJoint->rotate(angleBetweenVectors(v1, v2, worldRotationAxis));
-                jointMoveEvent(m_activeJoint);
+                qreal angle = angleBetweenVectors(v1, v2, worldRotationAxis);
+                m_activeJoint->rotate(angle);
+                /*for (int i = 0; i < m_jointGroups.size(); ++i)
+                {
+                    QHash<int, bool> indexes;
+                    for (auto j = m_jointGroups.at(i).begin(); j != m_jointGroups.at(i).end(); ++j)
+                        if (m_activeJoint == j.key()) indexes[i] = j.value();
+                    for (auto j = indexes.begin(); j != indexes.end(); ++j)
+                        indexes
+                }*/
+                jointMoveEvent(m_activeJoint, angle);
             }
             if (m_camera.active && !m_activeJoint)
             {

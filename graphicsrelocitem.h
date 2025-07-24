@@ -20,21 +20,19 @@ public:
         RelocField
     };
     GraphicsRelocItem(QGraphicsItem *parent = nullptr);
-    void resize(const qreal, const qreal);
-    void scale(const qreal scale);
-    void canvasScaled(const qreal scale);
-    void setBlocked(const bool);
+    void resize(qreal width, qreal height);
+    void scale(qreal scale);
+    void canvasScaled(qreal scale);
     void setCenterPos(const QPointF&);
-    void setCenterPos(const qreal x, const qreal y);
-    void rotate(const qreal);
-    void setShiftEnable(const bool);
+    void setCenterPos(qreal x, qreal y);
+    void rotate(qreal turnAngle);
+    void setShiftEnable(bool state);
 
-    bool isBlocked() const;
     bool shiftPressed() const;
     QPointF centerPos() const;
     QPointF centerScenePos() const;
-    QPointF turnAroundPoint(const QPointF& point, const qreal angle, const QPointF center = QPointF()) const;
-    QPointF turnAroundCenter(const QPointF&, const qreal angle) const;
+    QPointF turnAroundPoint(const QPointF& point, qreal angle, const QPointF center = QPointF()) const;
+    QPointF turnAroundCenter(const QPointF&, qreal angle) const;
 
 protected:
     void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;
@@ -43,7 +41,6 @@ protected:
     virtual void paintEvent(QPainter*);
 
 private:
-    bool m_block;
     bool m_shiftPressed;
     RotationField *m_rotationField;
     ResizeField *m_resizeFields[8];
@@ -66,8 +63,8 @@ public:
         Left
     };
     ResizeField(const Role type, GraphicsRelocItem *parent = nullptr);
-    void setPlace(const qreal, const qreal);
-    void setRole(const Role);
+    void setPlace(qreal x, qreal y);
+    void setRole(const Role role);
     Role role() const;
     //QPointF place() const;
 
@@ -92,7 +89,7 @@ class RotationField : public QGraphicsEllipseItem
 {
 public:
     RotationField(GraphicsRelocItem *parent = nullptr);
-    void setPlace(const qreal, const qreal);
+    void setPlace(qreal x, qreal y);
 
 protected:
     void paint(QPainter*, const QStyleOptionGraphicsItem*, QWidget* = nullptr) override;

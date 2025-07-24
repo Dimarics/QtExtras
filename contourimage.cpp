@@ -1,4 +1,5 @@
 #include "contourimage.h"
+//#include "graphicsgloweffect.h"
 #include <QPainter>
 #include <QCursor>
 #include <QGraphicsSceneMouseEvent>
@@ -6,7 +7,12 @@
 ContourImage::ContourImage(const QList<QList<QPointF>> &contours) :
     m_originalWidth(0),
     m_originalHeight(0)
+    //m_glow(new GraphicsGlowEffect)
 {
+    /*GraphicsGlowEffect *highlight = new GraphicsGlowEffect;
+    highlight->setBlurRadius(16);
+    highlight->setStrength(10);
+    setGraphicsEffect(highlight);*/
     if (!contours.isEmpty()) setContours(contours);
 }
 
@@ -129,7 +135,24 @@ void ContourImage::setContours(const QList<QList<QPointF>> &contours)
         }
     }
     m_originalShape << m_originalShape.first();
+
+    // Подсветка
+    //setGraphicsEffect(m_glow);
+    //m_glow->setBlurRadius(12);
+    //m_glow->setStrength(5);
+
+    setValid(true);
 }
+
+void ContourImage::setValid(bool value)
+{
+    m_valid = value;
+    m_color = value ? QColor(0, 170, 230) : Qt::red;
+    //m_glow->setColor(m_color);
+    //update();
+}
+
+bool ContourImage::isValid() const { return m_valid; }
 
 bool ContourImage::crossPaths(const QPainterPath &painterPath) const
 {
@@ -197,22 +220,10 @@ void ContourImage::resizeEvent(qreal width, qreal height)
 void ContourImage::paintEvent(QPainter *painter)
 {
     painter->setRenderHint(QPainter::Antialiasing);
-    painter->setPen(QPen(isBlocked() ? Qt::red : QColor(0, 170, 230), 0));
+    painter->setPen(QPen(m_color, 0));
     for (QList<QPointF> &contour : m_contours)
-    {
         painter->drawPolyline(contour);
-    }
-
-    /*painter->setPen(QPen(Qt::blue, 0));
-    painter->setBrush(QColor(0, 0, 255, 50));
-    painter->translate(centerPos());
-    painter->rotate(-rotation());
-    painter->translate(-centerPos());
-    painter->drawPath(shape());*/
-
-    /*painter->setPen(Qt::green);
-    painter->setBrush(QColor(0, 0, 255, 50));
-    painter->drawRect(boundingRect());*/
+    //m_glow->setEnabled(isSelected());
 }
 
 QDataStream &operator<< (QDataStream &stream, const ContourImage *image)

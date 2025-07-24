@@ -7,7 +7,6 @@
 #include <QGraphicsSceneMouseEvent>
 
 GraphicsRelocItem::GraphicsRelocItem(QGraphicsItem *parent) : QGraphicsRectItem(parent),
-    m_block(false),
     m_shiftPressed(false),
     m_rotationField(new RotationField(this)),
     m_resizeFields
@@ -26,7 +25,7 @@ GraphicsRelocItem::GraphicsRelocItem(QGraphicsItem *parent) : QGraphicsRectItem(
     rotate(0);
 }
 
-void GraphicsRelocItem::resize(const qreal width, const qreal height)
+void GraphicsRelocItem::resize(qreal width, qreal height)
 {
     setRect(0, 0, width, height);
     setTransformOriginPoint(width / 2.f, height / 2.f);
@@ -67,12 +66,9 @@ void GraphicsRelocItem::resize(const qreal width, const qreal height)
     resizeEvent(width, height);
 }
 
-void GraphicsRelocItem::scale(const qreal scale)
-{
-    resize(rect().width() * scale, rect().height() * scale);
-}
+void GraphicsRelocItem::scale(qreal scale) { resize(rect().width() * scale, rect().height() * scale); }
 
-void GraphicsRelocItem::canvasScaled(const qreal scale)
+void GraphicsRelocItem::canvasScaled(qreal scale)
 {
     for (QGraphicsItem *item : childItems())
         if (item->type() == UserType + 1)
@@ -80,23 +76,11 @@ void GraphicsRelocItem::canvasScaled(const qreal scale)
     resize(rect().width(), rect().height());
 }
 
-void GraphicsRelocItem::setBlocked(const bool block)
-{
-    m_block = block;
-    update();
-}
+void GraphicsRelocItem::setCenterPos(const QPointF &point) { setPos(point - centerPos()); }
 
-void GraphicsRelocItem::setCenterPos(const QPointF &point)
-{
-    setPos(point - centerPos());
-}
+void GraphicsRelocItem::setCenterPos(qreal x, qreal y) { setCenterPos(QPointF(x, y)); }
 
-void GraphicsRelocItem::setCenterPos(const qreal x, const qreal y)
-{
-    setCenterPos(QPointF(x, y));
-}
-
-void GraphicsRelocItem::rotate(const qreal turnAngle)
+void GraphicsRelocItem::rotate(qreal turnAngle)
 {
     static const Qt::CursorShape cursorShapes[8]
     {
@@ -124,32 +108,15 @@ void GraphicsRelocItem::rotate(const qreal turnAngle)
     }
 }
 
-void GraphicsRelocItem::setShiftEnable(const bool value)
-{
-    m_shiftPressed = value;
-}
+void GraphicsRelocItem::setShiftEnable(bool state) { m_shiftPressed = state; }
 
-bool GraphicsRelocItem::isBlocked() const
-{
-    return m_block;
-}
+bool GraphicsRelocItem::shiftPressed() const { return m_shiftPressed; }
 
-bool GraphicsRelocItem::shiftPressed() const
-{
-    return m_shiftPressed;
-}
+QPointF GraphicsRelocItem::centerPos() const { return QPointF(rect().width(), rect().height()) / 2.f; }
 
-QPointF GraphicsRelocItem::centerPos() const
-{
-    return QPointF(rect().width(), rect().height()) / 2.f;
-}
+QPointF GraphicsRelocItem::centerScenePos() const { return pos() + centerPos(); }
 
-QPointF GraphicsRelocItem::centerScenePos() const
-{
-    return pos() + centerPos();
-}
-
-QPointF GraphicsRelocItem::turnAroundPoint(const QPointF &point, const qreal angle, const QPointF center) const
+QPointF GraphicsRelocItem::turnAroundPoint(const QPointF &point, qreal angle, const QPointF center) const
 {
     const qreal x0 = center.x();
     const qreal y0 = center.y();
@@ -158,7 +125,7 @@ QPointF GraphicsRelocItem::turnAroundPoint(const QPointF &point, const qreal ang
                    y0 + (point.x() - x0) * qSin(_angle) + (point.y() - y0) * qCos(_angle));
 }
 
-QPointF GraphicsRelocItem::turnAroundCenter(const QPointF &point, const qreal angle) const
+QPointF GraphicsRelocItem::turnAroundCenter(const QPointF &point, qreal angle) const
 {
     const qreal x0 = centerPos().x();
     const qreal y0 = centerPos().y();
@@ -204,7 +171,7 @@ ResizeField::ResizeField(const Role role, GraphicsRelocItem *parent) :
     setRole(role);
 }
 
-void ResizeField::setPlace(const qreal x, const qreal y)
+void ResizeField::setPlace(qreal x, qreal y)
 {
     setPos(x - rect().width() * scale() / 2.f, y - rect().height() * scale() / 2.f);
 }
@@ -321,15 +288,9 @@ void ResizeField::mouseReleaseEvent(QGraphicsSceneMouseEvent*)
     //parentItem()->setFlag(QGraphicsItem::ItemIsMovable);
 }
 
-int ResizeField::type() const
-{
-    return GraphicsRelocItem::RelocField;
-}
+int ResizeField::type() const { return GraphicsRelocItem::RelocField; }
 
-ResizeField::Role ResizeField::role() const
-{
-    return m_role;
-}
+ResizeField::Role ResizeField::role() const { return m_role; }
 
 //--------------------------------------------------------
 
@@ -347,7 +308,7 @@ RotationField::RotationField(GraphicsRelocItem *parent) : QGraphicsEllipseItem(p
     m_line->setPen(QPen(QColor(0, 120, 215), 0));
 }
 
-void RotationField::setPlace(const qreal x, const qreal y)
+void RotationField::setPlace(qreal x, qreal y)
 {
     setPos(x - rect().width() * scale() / 2.f, y - m_line->line().y2() * scale());
 }
@@ -393,7 +354,4 @@ void RotationField::mouseReleaseEvent(QGraphicsSceneMouseEvent*)
     setCursor(Qt::OpenHandCursor);
 }
 
-int RotationField::type() const
-{
-    return GraphicsRelocItem::RelocField;
-}
+int RotationField::type() const { return GraphicsRelocItem::RelocField; }

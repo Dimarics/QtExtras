@@ -3,6 +3,10 @@
 
 #include <QGraphicsEffect>
 
+extern Q_WIDGETS_EXPORT void qt_blurImage(QPainter *painter, QImage &blurImage, qreal radius,
+                                          bool quality, bool alphaOnly, int transposed = 0 );
+extern Q_WIDGETS_EXPORT bool qt_scaleForTransform(const QTransform &transform, qreal *scale);
+
 class GraphicsGlowEffect : public QGraphicsEffect
 {
 public:
@@ -12,19 +16,18 @@ public:
     void setColor(QColor value);
     void setStrength(int value);
     void setBlurRadius(qreal value);
-    QColor color() const;
     int strength() const;
     qreal blurRadius() const;
+    QColor color() const;
 
 protected:
     void draw(QPainter* painter);
 
 private:
-    static QPixmap applyEffectToPixmap(QPixmap src, QGraphicsEffect *effect, int extent);
-    int m_extent = 5;
-    QColor m_color = QColor(255, 255, 255);
-    int m_strength = 3;
-    qreal m_blurRadius = 5.0;
+    int m_strength;
+    qreal m_logicalBlurRadius;
+    qreal m_deviceBlurRadius;
+    QColor m_color;
 };
 
 #endif // GRAPHICSGLOWEFFECT_H

@@ -65,6 +65,11 @@ void Volume::setValue(int value, bool emit_signal)
     if (emit_signal) emit sendValue(m_spinBox->value());
 }
 
+void Volume::updateValue(int value)
+{
+    if (!m_spinBox->hasFocus() && !m_slider->hasFocus()) m_spinBox->setValue(value);
+}
+
 void Volume::setFieldWidth(int width)
 {
     m_spinBox->setFixedWidth(width);

@@ -1,35 +1,24 @@
 #include "doublespinbox.h"
 #include <QLineEdit>
 
-DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent), m_value(0)
+DoubleSpinBox::DoubleSpinBox(QWidget *parent) : QDoubleSpinBox(parent)
 {
-    connect(this, &QDoubleSpinBox::valueChanged, this, [this](double value)
-    {
-        m_value = value;
-    });
     connect(this, &QDoubleSpinBox::editingFinished, this, [this]
     {
         clearFocus();
     });
 }
 
-void DoubleSpinBox::setOriginValue(double value)
+void DoubleSpinBox::wheelEvent(QWheelEvent*)
 {
-    m_value = value;
-    blockSignals(true);
-    setValue(value);
-    blockSignals(false);
+    //if (hasFocus()) clearFocus();
 }
-
-double DoubleSpinBox::originValue() const { return m_value; }
-
-void DoubleSpinBox::wheelEvent(QWheelEvent*){}
 
 void DoubleSpinBox::focusOutEvent(QFocusEvent *event)
 {
-    blockSignals(true);
+    //blockSignals(true);
     QDoubleSpinBox::focusOutEvent(event);
-    blockSignals(false);
+    //blockSignals(false);
 }
 
 QValidator::State DoubleSpinBox::validate(QString &text, int &pos) const
@@ -56,3 +45,5 @@ double DoubleSpinBox::valueFromText(const QString &t) const
     else if (value > maximum()) value = maximum();
     return value;
 }
+
+void DoubleSpinBox::updateValue(double value) { if (!hasFocus()) setValue(value); }

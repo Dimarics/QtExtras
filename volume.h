@@ -15,6 +15,7 @@ public:
     void setMinimum(int minimum);
     void setMaximum(int maximum);
     void setValue(int value, bool = true);
+    void updateValue(int value);
     void setFieldWidth(int width);
     void setFieldHeight(int height);
 
